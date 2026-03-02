@@ -3,76 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إرسال الطقس الذكي - أمجد</title>
+    <title>نظام أمجد مريم للطقس - Ciedco SMS</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; border-top: 5px solid #007bff; }
-        h2 { color: #333; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: #007bff; box-shadow: 0 0 5px rgba(0,123,255,0.2); outline: none; }
-        button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; margin-top: 10px; }
-        button:hover { background-color: #218838; }
-        #status { margin-top: 20px; font-size: 15px; padding: 10px; border-radius: 5px; }
-        .footer { margin-top: 20px; font-size: 11px; color: #999; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #d1d8e0; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        button:hover { background-color: #0056b3; }
+        #status { margin-top: 20px; font-size: 14px; color: #555; line-height: 1.6; }
+        .note { font-size: 11px; color: #999; margin-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>خدمة طقس SMS</h2>
-    <input type="text" id="city" placeholder="اسم المدينة (مثلاً: Damascus)">
-    <input type="text" id="phone" placeholder="رقم الهاتف (9639xxxxxxxx)">
-    <button onclick="runSystem()">جلب الطقس وإرسال الرسالة</button>
+    <h2>خدمة الطقس SMS</h2>
+    <input type="text" id="city" placeholder="المدينة بالإنجليزية (مثل: Damascus)">
+    <input type="text" id="phone" placeholder="رقم الموبايل (9639xxxxxxxx)">
+    <button onclick="checkAndSend()">إرسال حالة الطقس</button>
     <div id="status"></div>
-    <div class="footer">تطوير م. أمجد مريم | نظام Ciedco-SMS</div>
+    <div class="note">بوابة الإرسال: Ciedco-SMS | تطوير: أمجد</div>
 </div>
 
 <script>
-async function runSystem() {
+async function checkAndSend() {
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const statusDiv = document.getElementById('status');
 
     if (!city || !phone) {
-        statusDiv.style.color = "red";
-        statusDiv.innerText = "⚠️ يرجى إدخال اسم المدينة ورقم الموبايل";
+        statusDiv.innerHTML = "<span style='color:red;'>⚠️ يرجى إكمال الحقول</span>";
         return;
     }
 
-    statusDiv.style.color = "#444";
-    statusDiv.innerText = "⏳ جاري تنفيذ الطلب...";
+    statusDiv.innerText = "⏳ جاري جلب الطقس والتحقق من الحساب...";
 
     try {
-        // 1. جلب بيانات الطقس من السيرفر المباشر (بدون مفتاح API لتجنب أخطاء التفعيل)
+        // 1. جلب الطقس
         const weatherRes = await fetch(`https://wttr.in/${city}?format=j1`);
-        if (!weatherRes.ok) throw new Error("تعذر الوصول لسيرفر الطقس");
-        
         const weatherData = await weatherRes.json();
         const temp = weatherData.current_condition[0].temp_C;
         const desc = weatherData.current_condition[0].lang_ar ? weatherData.current_condition[0].lang_ar[0].value : weatherData.current_condition[0].weatherDesc[0].value;
         
-        const message = `طقس ${city}: ${desc}، حرارة ${temp}C. نظام أمجد مريم.`;
+        const message = `طقس ${city}: ${desc}، حرارة ${temp}C. نظام أمجد.`;
 
-        // 2. بيانات حسابك في سيدكو
+        // 2. بيانات سيدكو (تأكد من عدم وجود مسافات هنا)
         const user = "amjad";
         const pass = "A@112233A@112233";
-        // تم ترك اسم المرسل فارغاً بناءً على طلبك لتجربة الإرسال الافتراضي
-        const sender = ""; 
+        const sender = "ciedco-sms"; // الاسم الذي أكدته لك الشركة
 
-        // 3. محاولة الإرسال (فتح الرابط في نافذة مخفية لمعرفة النتيجة الحقيقية)
+        // رابط الإرسال المباشر
         const smsUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${user}&password=${encodeURIComponent(pass)}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
 
-        // تنفيذ الطلب
-        const response = await fetch(smsUrl, { mode: 'no-cors' });
+        // 3. فتح الرابط في نافذة جديدة (Popup) للتأكد من النتيجة الحقيقية
+        // هذه الطريقة هي الأضمن حالياً لتخطي قيود CORS ومعرفة الرد (رقم العملية أو خطأ)
+        window.open(smsUrl, '_blank', 'width=400,height=300');
 
-        // ملاحظة لمشروع التخرج: بما أننا نستخدم no-cors، لا يمكننا قراءة الاستجابة برمجياً
-        // لكننا أظهرنا للمستخدم أن الطلب أُرسل بنجاح
         statusDiv.style.color = "green";
-        statusDiv.innerHTML = `✅ تم إرسال طلب الطقس!<br>الجو: ${desc} (${temp}°C)<br><small style="color:#666">ملاحظة: إذا لم تصل الرسالة، يرجى التأكد من اسم المرسل في لوحة التحكم (الخطأ E003).</small>`;
+        statusDiv.innerHTML = `✅ تم فتح نافذة الإرسال!<br>الجو: ${desc} (${temp}°C)<br>انظر للنافذة المنبثقة لمعرفة النتيجة.`;
 
     } catch (error) {
         statusDiv.style.color = "red";
-        statusDiv.innerText = "❌ فشل النظام: " + error.message;
+        statusDiv.innerText = "❌ خطأ: " + error.message;
     }
 }
 </script>
