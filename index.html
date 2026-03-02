@@ -1,74 +1,21 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع أمجد مريم - طقس واتساب</title>
-    <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #25D366; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 350px; text-align: center; }
-        h2 { color: #075E54; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; text-align: center; }
-        button { width: 100%; padding: 15px; background-color: #128C7E; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
-        button:hover { background-color: #075E54; transform: scale(1.02); }
-        #status { margin-top: 20px; font-size: 14px; color: #555; }
-        .icon { font-size: 50px; margin-bottom: 10px; }
-    </style>
-</head>
-<body>
+async function sendAutoWhatsApp() {
+    // هذه البيانات تحصل عليها عند فتح حساب تجريبي مجاني
+    const instance_id = "instance12345"; // رقم المعرف الخاص بك
+    const token = "abc123token"; // مفتاح الأمان
+    
+    const phone = "9639xxxxxxxx"; // رقم المستلم
+    const message = "*نشرة طقس أمجد مريم* 🌦️\nالحرارة في دمشق: 4°C";
 
-<div class="card">
-    <div class="icon">🌦️</div>
-    <h2>نظام طقس WhatsApp</h2>
-    <input type="text" id="city" placeholder="اسم المدينة (مثلاً: Damascus)">
-    <input type="text" id="phone" placeholder="رقم واتساب (9639xxxxxxxx)">
-    <button onclick="sendWeatherWhatsApp()">إرسال حالة الطقس</button>
-    <div id="status"></div>
-    <div style="font-size: 10px; color: #999; margin-top: 15px;">تطوير المبرمج أمجد مريم - مشروع تخرج</div>
-</div>
+    const url = `https://api.ultramsg.com/${instance_id}/messages/chat`;
 
-<script>
-async function sendWeatherWhatsApp() {
-    const city = document.getElementById('city').value.trim();
-    const phone = document.getElementById('phone').value.trim();
-    const statusDiv = document.getElementById('status');
+    // إرسال الطلب بنظام POST (تلقائي بالكامل)
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `token=${token}&to=${phone}&body=${encodeURIComponent(message)}`
+    });
 
-    if (!city || !phone) {
-        statusDiv.innerHTML = "<span style='color:red;'>⚠️ يرجى إدخال المدينة والرقم</span>";
-        return;
-    }
-
-    statusDiv.innerText = "⏳ جاري جلب بيانات الطقس...";
-
-    try {
-        // 1. جلب الطقس الحقيقي
-        const res = await fetch(`https://wttr.in/${city}?format=j1`);
-        const data = await res.json();
-        const temp = data.current_condition[0].temp_C;
-        const desc = data.current_condition[0].weatherDesc[0].value;
-        
-        // 2. صياغة رسالة احترافية
-        const message = `*نشرة الطقس من نظام أمجد* 🌦️\n\n` +
-                        `📍 *المدينة:* ${city}\n` +
-                        `🌡️ *الحرارة:* ${temp}°C\n` +
-                        `☁️ *الحالة:* ${desc}\n\n` +
-                        `_تم الإرسال عبر نظام الربط الذكي الخاص بأمجد مريم_`;
-
-        // 3. تنظيف الرقم وتجهيز رابط واتساب
-        const cleanPhone = phone.replace(/\D/g, ''); 
-        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-
-        // 4. فتح واتساب
-        statusDiv.style.color = "green";
-        statusDiv.innerText = "✅ جاري فتح واتساب...";
-        window.open(waUrl, '_blank');
-
-    } catch (error) {
-        statusDiv.style.color = "red";
-        statusDiv.innerText = "❌ فشل جلب الطقس، تأكد من اسم المدينة بالإنجليزية.";
+    if(response.ok) {
+        alert("✅ وصلت الرسالة للواتساب تلقائياً!");
     }
 }
-</script>
-
-</body>
-</html>
