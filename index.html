@@ -3,45 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع أمجد مريم - إرسال SMS</title>
+    <title>نظام أمجد مريم - Ciedco SMS</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #007bff; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
-        #status { margin-top: 15px; font-size: 13px; color: #666; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #28a745; }
+        h2 { color: #333; margin-bottom: 20px; font-size: 22px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #218838; }
+        #status { margin-top: 20px; font-size: 14px; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>نظام إرسال الطقس SMS</h2>
+    <h2>إرسال الطقس SMS</h2>
     <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
-    <input type="text" id="phone" placeholder="رقم الموبايل (9639xxxxxxxx)">
-    <button onclick="sendNow()">تشغيل النظام وإرسال SMS</button>
+    <input type="text" id="phone" placeholder="الرقم (9639xxxxxxxx)">
+    <button onclick="sendSms()">إرسال الطلب الآن</button>
     <div id="status">سيفتح النظام نافذة بوابة الإرسال للتأكد من النتيجة</div>
 </div>
 
 <script>
-function sendNow() {
+function sendSms() {
+    // جلب البيانات مع حذف أي مسافات زائدة (Trim)
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    
+    const statusDiv = document.getElementById('status');
+
     if (!city || !phone) {
-        alert("يرجى إدخال كافة البيانات");
+        alert("يرجى إدخال المدينة ورقم الهاتف");
         return;
     }
 
-    // بياناتك المعتمدة
-    const user = "amjad";
-    const pass = "A@112233A@112233";
-    const sender = "ciedco-sms"; // الاسم الذي زودتك به الشركة
-    const message = `تحية من نظام أمجد، الطقس في ${city} بانتظار التحديث.`;
+    // البيانات كما هي مسجلة في حسابك (تأكد من مطابقتها تماماً للوحة التحكم)
+    const user = "amjad"; 
+    const pass = "A@112233A@112233"; 
+    const sender = "ciedco-sms"; 
+    const message = `الطقس في ${city} بانتظار التحديث. مشروع التخرج - أمجد مريم.`;
 
-    // الرابط المباشر
+    // بناء الرابط البرمجي
     const url = `https://www.ciedco-sms.net/api/sendsms.php?username=${user}&password=${encodeURIComponent(pass)}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
 
-    // فتح الرابط في نافذة جديدة لرؤية رد السيرفر (E003 أو رقم العملية)
+    statusDiv.innerText = "⏳ جاري فتح بوابة الإرسال...";
+    
+    // فتح الرابط في نافذة جديدة لرؤية النتيجة المباشرة من السيرفر
     window.open(url, '_blank', 'width=500,height=400');
 }
 </script>
