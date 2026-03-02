@@ -3,64 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع أمجد - إرسال SMS (POST)</title>
+    <title>مشروع أمجد مريم - طقس واتساب</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #eef2f7; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
-        #status { margin-top: 20px; font-size: 14px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #25D366; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.2); width: 350px; text-align: center; }
+        h2 { color: #075E54; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 16px; text-align: center; }
+        button { width: 100%; padding: 15px; background-color: #128C7E; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #075E54; transform: scale(1.02); }
+        #status { margin-top: 20px; font-size: 14px; color: #555; }
+        .icon { font-size: 50px; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>إرسال الطقس (POST Method)</h2>
-    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
-    <input type="text" id="phone" placeholder="الرقم (9639xxxxxxxx)">
-    <button onclick="sendPostSms()">إرسال بنظام POST</button>
+    <div class="icon">🌦️</div>
+    <h2>نظام طقس WhatsApp</h2>
+    <input type="text" id="city" placeholder="اسم المدينة (مثلاً: Damascus)">
+    <input type="text" id="phone" placeholder="رقم واتساب (9639xxxxxxxx)">
+    <button onclick="sendWeatherWhatsApp()">إرسال حالة الطقس</button>
     <div id="status"></div>
+    <div style="font-size: 10px; color: #999; margin-top: 15px;">تطوير المبرمج أمجد مريم - مشروع تخرج</div>
 </div>
 
 <script>
-async function sendPostSms() {
+async function sendWeatherWhatsApp() {
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const statusDiv = document.getElementById('status');
 
     if (!city || !phone) {
-        statusDiv.innerText = "⚠️ يرجى إدخال البيانات";
+        statusDiv.innerHTML = "<span style='color:red;'>⚠️ يرجى إدخال المدينة والرقم</span>";
         return;
     }
 
-    statusDiv.style.color = "blue";
-    statusDiv.innerText = "⏳ جاري محاولة الإرسال بنظام POST...";
-
-    const message = `الطقس في ${city} تحت المعالجة. مشروع أمجد مريم.`;
-    
-    // تجهيز البيانات كجسم طلب (Form Data)
-    const formData = new FormData();
-    formData.append('username', 'amjad');
-    formData.append('password', 'A@112233A@112233');
-    formData.append('numbers', phone);
-    formData.append('sender', 'ciedco-sms');
-    formData.append('message', message);
-    formData.append('unicode', 'e');
+    statusDiv.innerText = "⏳ جاري جلب بيانات الطقس...";
 
     try {
-        // إرسال الطلب بطريقة POST
-        const response = await fetch('https://www.ciedco-sms.net/api/sendsms.php', {
-            method: 'POST',
-            body: formData,
-            mode: 'no-cors' // لتجاوز قيود المتصفح الأمنية
-        });
+        // 1. جلب الطقس الحقيقي
+        const res = await fetch(`https://wttr.in/${city}?format=j1`);
+        const data = await res.json();
+        const temp = data.current_condition[0].temp_C;
+        const desc = data.current_condition[0].weatherDesc[0].value;
+        
+        // 2. صياغة رسالة احترافية
+        const message = `*نشرة الطقس من نظام أمجد* 🌦️\n\n` +
+                        `📍 *المدينة:* ${city}\n` +
+                        `🌡️ *الحرارة:* ${temp}°C\n` +
+                        `☁️ *الحالة:* ${desc}\n\n` +
+                        `_تم الإرسال عبر نظام الربط الذكي الخاص بأمجد مريم_`;
 
+        // 3. تنظيف الرقم وتجهيز رابط واتساب
+        const cleanPhone = phone.replace(/\D/g, ''); 
+        const waUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
+
+        // 4. فتح واتساب
         statusDiv.style.color = "green";
-        statusDiv.innerHTML = "✅ تم إرسال طلب POST بنجاح!<br>إذا لم تصل الرسالة، انتظر رد الموظف.";
+        statusDiv.innerText = "✅ جاري فتح واتساب...";
+        window.open(waUrl, '_blank');
 
     } catch (error) {
         statusDiv.style.color = "red";
-        statusDiv.innerText = "❌ خطأ في الاتصال: " + error.message;
+        statusDiv.innerText = "❌ فشل جلب الطقس، تأكد من اسم المدينة بالإنجليزية.";
     }
 }
 </script>
