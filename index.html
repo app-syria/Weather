@@ -3,50 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام أمجد مريم - Ciedco SMS</title>
+    <title>مشروع أمجد مريم - إرسال SMS</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        #status { margin-top: 15px; font-size: 14px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #007bff; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        #status { margin-top: 15px; font-size: 13px; color: #666; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>إرسال الطقس SMS</h2>
+    <h2>نظام إرسال الطقس SMS</h2>
     <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
-    <input type="text" id="phone" placeholder="الرقم (9639xxxxxxxx)">
-    <button onclick="sendViaLink()">إرسال الآن</button>
-    <div id="status"></div>
+    <input type="text" id="phone" placeholder="رقم الموبايل (9639xxxxxxxx)">
+    <button onclick="sendNow()">تشغيل النظام وإرسال SMS</button>
+    <div id="status">سيفتح النظام نافذة بوابة الإرسال للتأكد من النتيجة</div>
 </div>
 
 <script>
-function sendViaLink() {
+function sendNow() {
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('phone').value.trim();
-    const statusDiv = document.getElementById('status');
-
+    
     if (!city || !phone) {
-        statusDiv.innerText = "⚠️ أكمل البيانات أولاً";
+        alert("يرجى إدخال كافة البيانات");
         return;
     }
 
-    // رسالة ثابتة لتجنب مشاكل الـ Fetch للطقس حالياً والتأكد من الـ SMS أولاً
-    const message = `تحياتي، الجو في ${city} بانتظار التحديث. نظام أمجد مريم.`;
-    
-    // بياناتك التي أكدتها الشركة
+    // بياناتك المعتمدة
     const user = "amjad";
     const pass = "A@112233A@112233";
-    const sender = "ciedco-sms";
+    const sender = "ciedco-sms"; // الاسم الذي زودتك به الشركة
+    const message = `تحية من نظام أمجد، الطقس في ${city} بانتظار التحديث.`;
 
-    // بناء الرابط
-    const smsUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${user}&password=${encodeURIComponent(pass)}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
+    // الرابط المباشر
+    const url = `https://www.ciedco-sms.net/api/sendsms.php?username=${user}&password=${encodeURIComponent(pass)}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
 
-    // فتح الرابط مباشرة في نافذة جديدة لتجاوز خطأ Fetch
-    statusDiv.innerHTML = "⏳ جاري فتح بوابة الإرسال...";
-    window.open(smsUrl, '_blank');
+    // فتح الرابط في نافذة جديدة لرؤية رد السيرفر (E003 أو رقم العملية)
+    window.open(url, '_blank', 'width=500,height=400');
 }
 </script>
 
