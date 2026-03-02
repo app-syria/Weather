@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إرسال الطقس - أمجد</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #eef2f7; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
+        h2 { color: #007bff; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; transition: 0.3s; }
+        button:hover { background-color: #218838; }
+        #status { margin-top: 20px; font-size: 14px; color: #555; line-height: 1.6; }
+        .footer { margin-top: 15px; font-size: 12px; color: #aaa; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>خدمة طقس SMS</h2>
+    <input type="text" id="city" placeholder="أدخل المدينة (مثلاً: Damascus)">
+    <input type="text" id="phone" placeholder="رقم الموبايل (9639xxxxxxxx)">
+    <button onclick="processAndSend()">إرسال حالة الطقس الآن</button>
+    <div id="status"></div>
+    <div class="footer">تطوير: أمجد | نظام Ciedco-SMS</div>
+</div>
+
+<script>
+async function processAndSend() {
+    const city = document.getElementById('city').value;
+    const phone = document.getElementById('phone').value;
+    const statusDiv = document.getElementById('status');
+
+    if (!city || !phone) {
+        statusDiv.innerHTML = "<span style='color:red;'>يرجى إدخال المدينة ورقم الهاتف!</span>";
+        return;
+    }
+
+    statusDiv.innerHTML = "⏳ جاري جلب بيانات الطقس...";
+
+    try {
+        // 1. جلب بيانات الطقس باستخدام المفتاح الذي زودتني به
+        const weatherKey = 'D821063092a96ff436c1a343fa0732f7';
+        const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${weatherKey}&units=metric&lang=ar`;
+        
+        const weatherRes = await fetch(weatherUrl);
+        const weatherData = await weatherRes.json();
+
+        if (weatherData.cod !== 200) {
+            throw new Error("لم يتم العثور على المدينة. تأكد من كتابتها بالإنجليزية.");
+        }
+
+        const temp = Math.round(weatherData.main.temp);
+        const desc = weatherData.weather[0].description;
+        const message = `حالة الطقس في ${city}: ${desc}، الحرارة: ${temp}°C. تم الإرسال عبر نظام أمجد.`;
+
+        // 2. إرسال الرسالة عبر Ciedco باستخدام بياناتك
+        statusDiv.innerHTML = "✅ تم جلب الطقس، جاري الإرسال كـ SMS...";
+
+        const smsUser = "amjad";
+        const smsPass = "A@112233A@112233";
+        const sender = "ciedco-sms";
+
+        // بناء رابط الإرسال الخاص بـ Ciedco
+        const smsUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${smsUser}&password=${smsPass}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
+
+        // تنفيذ طلب الإرسال (استخدام no-cors لتخطي قيود المتصفح في العرض فقط)
+        fetch(smsUrl, { mode: 'no-cors' });
+
+        statusDiv.innerHTML = `<span style='color:green;'>👍 تمت العملية!<br>الرسالة: ${message}</span>`;
+
+    } catch (error) {
+        statusDiv.innerHTML = `<span style='color:red;'>خطأ: ${error.message}</span>`;
+    }
+}
+</script>
+
+</body>
+</html>
