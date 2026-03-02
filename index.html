@@ -3,42 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام أمجد مريم - Ciedco SMS</title>
+    <title>مشروع أمجد - إرسال SMS (POST)</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #007bff; }
-        h2 { color: #333; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        #status { margin-top: 20px; font-size: 14px; color: #666; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #eef2f7; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        #status { margin-top: 20px; font-size: 14px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>إرسال الطقس SMS</h2>
-    <input type="text" id="city" placeholder="المدينة (Damascus)">
+    <h2>إرسال الطقس (POST Method)</h2>
+    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
     <input type="text" id="phone" placeholder="الرقم (9639xxxxxxxx)">
-    <button onclick="sendFinalSms()">إرسال الطلب</button>
-    <div id="status">سيفتح النظام نافذة بوابة الإرسال</div>
+    <button onclick="sendPostSms()">إرسال بنظام POST</button>
+    <div id="status"></div>
 </div>
 
 <script>
-function sendFinalSms() {
+async function sendPostSms() {
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('phone').value.trim();
+    const statusDiv = document.getElementById('status');
+
+    if (!city || !phone) {
+        statusDiv.innerText = "⚠️ يرجى إدخال البيانات";
+        return;
+    }
+
+    statusDiv.style.color = "blue";
+    statusDiv.innerText = "⏳ جاري محاولة الإرسال بنظام POST...";
+
+    const message = `الطقس في ${city} تحت المعالجة. مشروع أمجد مريم.`;
     
-    // البيانات الخاصة بحسابك
-    const u = "amjad"; //
-    const p = "A@112233A@112233"; //
-    const s = "ciedco-sms"; //
-    const msg = `الطقس في ${city} بانتظار التحديث. مشروع أمجد مريم.`;
+    // تجهيز البيانات كجسم طلب (Form Data)
+    const formData = new FormData();
+    formData.append('username', 'amjad');
+    formData.append('password', 'A@112233A@112233');
+    formData.append('numbers', phone);
+    formData.append('sender', 'ciedco-sms');
+    formData.append('message', message);
+    formData.append('unicode', 'e');
 
-    // بناء الرابط البرمجي مع التأكد من أسماء المتغيرات
-    const url = `https://www.ciedco-sms.net/api/sendsms.php?username=${u}&password=${p}&numbers=${phone}&sender=${s}&message=${encodeURIComponent(msg)}&unicode=e`;
+    try {
+        // إرسال الطلب بطريقة POST
+        const response = await fetch('https://www.ciedco-sms.net/api/sendsms.php', {
+            method: 'POST',
+            body: formData,
+            mode: 'no-cors' // لتجاوز قيود المتصفح الأمنية
+        });
 
-    // فتح الرابط في نافذة جديدة
-    window.open(url, '_blank', 'width=500,height=400');
+        statusDiv.style.color = "green";
+        statusDiv.innerHTML = "✅ تم إرسال طلب POST بنجاح!<br>إذا لم تصل الرسالة، انتظر رد الموظف.";
+
+    } catch (error) {
+        statusDiv.style.color = "red";
+        statusDiv.innerText = "❌ خطأ في الاتصال: " + error.message;
+    }
 }
 </script>
 
