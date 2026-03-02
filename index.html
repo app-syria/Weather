@@ -3,70 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام أمجد مريم للطقس - Ciedco SMS</title>
+    <title>نظام أمجد مريم - Ciedco SMS</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        h2 { color: #2c3e50; margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #d1d8e0; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        button:hover { background-color: #0056b3; }
-        #status { margin-top: 20px; font-size: 14px; color: #555; line-height: 1.6; }
-        .note { font-size: 11px; color: #999; margin-top: 15px; }
+        body { font-family: sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 350px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #007bff; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        #status { margin-top: 15px; font-size: 14px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>خدمة الطقس SMS</h2>
-    <input type="text" id="city" placeholder="المدينة بالإنجليزية (مثل: Damascus)">
-    <input type="text" id="phone" placeholder="رقم الموبايل (9639xxxxxxxx)">
-    <button onclick="checkAndSend()">إرسال حالة الطقس</button>
+    <h2>إرسال الطقس SMS</h2>
+    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
+    <input type="text" id="phone" placeholder="الرقم (9639xxxxxxxx)">
+    <button onclick="sendViaLink()">إرسال الآن</button>
     <div id="status"></div>
-    <div class="note">بوابة الإرسال: Ciedco-SMS | تطوير: أمجد</div>
 </div>
 
 <script>
-async function checkAndSend() {
+function sendViaLink() {
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const statusDiv = document.getElementById('status');
 
     if (!city || !phone) {
-        statusDiv.innerHTML = "<span style='color:red;'>⚠️ يرجى إكمال الحقول</span>";
+        statusDiv.innerText = "⚠️ أكمل البيانات أولاً";
         return;
     }
 
-    statusDiv.innerText = "⏳ جاري جلب الطقس والتحقق من الحساب...";
+    // رسالة ثابتة لتجنب مشاكل الـ Fetch للطقس حالياً والتأكد من الـ SMS أولاً
+    const message = `تحياتي، الجو في ${city} بانتظار التحديث. نظام أمجد مريم.`;
+    
+    // بياناتك التي أكدتها الشركة
+    const user = "amjad";
+    const pass = "A@112233A@112233";
+    const sender = "ciedco-sms";
 
-    try {
-        // 1. جلب الطقس
-        const weatherRes = await fetch(`https://wttr.in/${city}?format=j1`);
-        const weatherData = await weatherRes.json();
-        const temp = weatherData.current_condition[0].temp_C;
-        const desc = weatherData.current_condition[0].lang_ar ? weatherData.current_condition[0].lang_ar[0].value : weatherData.current_condition[0].weatherDesc[0].value;
-        
-        const message = `طقس ${city}: ${desc}، حرارة ${temp}C. نظام أمجد.`;
+    // بناء الرابط
+    const smsUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${user}&password=${encodeURIComponent(pass)}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
 
-        // 2. بيانات سيدكو (تأكد من عدم وجود مسافات هنا)
-        const user = "amjad";
-        const pass = "A@112233A@112233";
-        const sender = "ciedco-sms"; // الاسم الذي أكدته لك الشركة
-
-        // رابط الإرسال المباشر
-        const smsUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${user}&password=${encodeURIComponent(pass)}&numbers=${phone}&sender=${sender}&message=${encodeURIComponent(message)}&unicode=e`;
-
-        // 3. فتح الرابط في نافذة جديدة (Popup) للتأكد من النتيجة الحقيقية
-        // هذه الطريقة هي الأضمن حالياً لتخطي قيود CORS ومعرفة الرد (رقم العملية أو خطأ)
-        window.open(smsUrl, '_blank', 'width=400,height=300');
-
-        statusDiv.style.color = "green";
-        statusDiv.innerHTML = `✅ تم فتح نافذة الإرسال!<br>الجو: ${desc} (${temp}°C)<br>انظر للنافذة المنبثقة لمعرفة النتيجة.`;
-
-    } catch (error) {
-        statusDiv.style.color = "red";
-        statusDiv.innerText = "❌ خطأ: " + error.message;
-    }
+    // فتح الرابط مباشرة في نافذة جديدة لتجاوز خطأ Fetch
+    statusDiv.innerHTML = "⏳ جاري فتح بوابة الإرسال...";
+    window.open(smsUrl, '_blank');
 }
 </script>
 
