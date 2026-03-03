@@ -7,11 +7,8 @@
     <style>
         body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #007bff; }
-        h2 { color: #333; margin-bottom: 10px; }
-        p { color: #666; font-size: 14px; margin-bottom: 20px; }
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; }
-        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
-        button:hover { background-color: #0056b3; }
+        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
         .footer { margin-top: 20px; font-size: 11px; color: #999; }
     </style>
 </head>
@@ -19,39 +16,39 @@
 
 <div class="card">
     <h2>نظام SMS الذكي</h2>
-    <p>بوابة إرسال الطقس - م. أمجد مريم</p>
+    <p>بوابة Ciedco - مشروع م. أمجد مريم</p>
     
     <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
-    <input type="text" id="phone" placeholder="رقم المستلم (mno)">
+    <input type="text" id="phone" placeholder="رقم الهاتف (mno)">
     
     <button onclick="sendSmsDirect()">إرسال حالة الطقس</button>
 
     <div class="footer">
-        تم التطوير بواسطة أمجد مريم - خبير أنظمة الحماية والشبكات
+        تم التطوير بواسطة أمجد مريم - متخصص أنظمة حماية وشبكات
     </div>
 </div>
 
 <script>
 function sendSmsDirect() {
     const city = document.getElementById('city').value.trim();
-    const mno = document.getElementById('phone').value.trim();
+    const mno = document.getElementById('phone').value.trim(); // استخدام mno بدلاً من numbers
 
     if (!city || !mno) {
-        alert("يرجى إدخال اسم المدينة ورقم الهاتف");
+        alert("يرجى إدخال البيانات المطلوبة");
         return;
     }
 
-    // البيانات المعتمدة لنظام Ciedco API حسب طلبك
-    const user = "appsyria00@gmail.com"; 
-    const pass = "A@112233A@112233";
-    const sender = "ciedco-sms";
-    const msg = `حالة الطقس في ${city}: صافي. مشروع م. أمجد مريم.`;
-    const mt = "1"; // لضمان إرسال اللغة العربية بشكل صحيح
+    // البيانات الصحيحة حسب توثيق Ciedco وقسم المطورين
+    const user = "appsyria00@gmail.com"; // اليوزر نيم هو الإيميل كما ذكرت
+    const pass = "A@112233A@112233"; // كلمة المرور الخاصة بك
+    const sender = "ciedco-sms"; // اسم المرسل
+    const msg = `حالة الطقس في ${city}: صافي. مشروع م. أمجد مريم.`; // استخدام msg بدلاً من message
+    const mt = "1"; // استخدام mt بدلاً من unicode (القيمة 1 للعربي)
 
-    // بناء الرابط البرمجي مع التأكد من مسمى المتغير (user) لتجنب خطأ E003
+    // بناء الرابط البرمجي بالمسميات التي حددتها (user, mno, msg, mt)
     const apiUrl = `https://www.ciedco-sms.net/api/sendsms.php?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&mno=${mno}&sender=${sender}&msg=${encodeURIComponent(msg)}&mt=${mt}`;
 
-    // فتح الرابط لمشاهدة استجابة السيرفر وتجاوز حظر المتصفح
+    // فتح الرابط لمشاهدة استجابة السيرفر وتجنب خطأ E003
     window.open(apiUrl, '_blank');
 }
 </script>
