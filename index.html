@@ -2,22 +2,33 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مشروع التخرج - م. أمجد مريم</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مشروع م. أمجد مريم - نظام SMS</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 6px solid #007bff; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #eef2f3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 360px; text-align: center; border-top: 8px solid #28a745; }
+        h2 { color: #333; margin-bottom: 5px; }
+        .status { color: #28a745; font-weight: bold; margin-bottom: 20px; display: block; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; text-align: center; font-size: 16px; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; width: 100%; }
+        button:hover { background: #218838; transform: scale(1.02); }
+        .footer { margin-top: 25px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>نظام SMS الذكي</h2>
-    <p>بوابة Ciedco - م. أمجد مريم</p>
-    <input type="text" id="city" placeholder="المدينة (English)">
+    <h2>نظام التنبيهات الذكي</h2>
+    <span class="status">● حالة النظام: متصل</span>
+    
+    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
     <input type="text" id="mno" placeholder="9639xxxxxxxx">
-    <button onclick="sendFinalSms()">إرسال الرسالة الآن</button>
+    
+    <button onclick="sendFinalSms()">إرسال التقرير الجوي</button>
+
+    <div class="footer">
+        تطوير المهندس أمجد مريم - خبير أنظمة أمنية وشبكات
+    </div>
 </div>
 
 <script>
@@ -30,25 +41,25 @@ function sendFinalSms() {
         return;
     }
 
-    // تنظيف الرقم ليتوافق مع تعليمات Ciedco (بدون + أو 00)
+    // تنظيف الرقم ليتوافق مع تعليمات Ciedco
     phone = phone.replace(/^00/, '').replace(/^\+/, '');
 
     const message = `حالة الطقس في ${city} ممتازة. مشروع م. أمجد مريم.`;
 
-    // استخدام المعلمات كما وردت في رابط Messaging الخاص بك
-    const params = new URLSearchParams();
-    params.append('username', 'appsyria00@gmail.com');
-    params.append('password', 'A@112233A@112233');
-    params.append('mno', phone);
-    params.append('sid', 'ciedco-sms'); // تأكد من لوحة التحكم أن هذا المعرف متاح لك
-    params.append('msg', message);
-    params.append('mt', '1'); // 1 للعربي
-    params.append('json', '1');
+    // بناء المعلمات حسب توثيق Ciedco الرسمي
+    const params = new URLSearchParams({
+        username: "appsyria00@gmail.com",
+        password: "A@112233A@112233",
+        mno: phone,
+        sid: "ciedco-sms",
+        msg: message,
+        mt: "1", // 1 للغة العربية (Unicode)
+        json: "1"
+    });
 
-    // بناء الرابط النهائي
     const finalUrl = `https://www.ciedco-sms.net/api/sendsms.php?${params.toString()}`;
 
-    // فتح الرابط لمتابعة النتيجة
+    // فتح الرابط في نافذة جديدة
     window.open(finalUrl, '_blank');
 }
 </script>
