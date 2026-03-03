@@ -2,60 +2,55 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مشروع تخرج م. أمجد مريم - Ciedco</title>
+    <title>مشروع التخرج - م. أمجد مريم</title>
     <style>
-        body { font-family: 'Tahoma', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        body { font-family: 'Tahoma', sans-serif; background: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 6px solid #28a745; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; font-size: 16px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 16px; }
         button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
-        .footer { margin-top: 20px; font-size: 11px; color: #999; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>نظام تنبيهات SMS</h2>
-    <p>بوابة Ciedco - م. أمجد مريم</p>
-    <input type="text" id="city" placeholder="المدينة (مثل: Damascus)">
-    <input type="text" id="mno" placeholder="رقم الهاتف (9639xxxxxxxx)">
-    <button onclick="sendSmsCiedco()">إرسال الرسالة بالعربي</button>
-    <div class="footer">تطوير: أمجد مريم - متخصص أنظمة أمنية</div>
+    <h2>بوابة الرسائل الذكية</h2>
+    <p>مشروع تخرج: أمجد مريم</p>
+    <input type="text" id="city" placeholder="المدينة (English)">
+    <input type="text" id="mno" placeholder="رقم الهاتف">
+    <button onclick="sendSmsSecure()">إرسال SMS بالعربي</button>
 </div>
 
 <script>
-// دالة لتحويل النص العربي إلى صيغة يفهمها سيرفر الـ SMS (Hex)
-function encodeArabic(text) {
-    let hex = "";
-    for (let i = 0; i < text.length; i++) {
-        let charHex = text.charCodeAt(i).toString(16).toUpperCase();
-        while (charHex.length < 4) charHex = "0" + charHex;
-        hex += charHex;
-    }
-    return hex;
-}
-
-function sendSmsCiedco() {
+function sendSmsSecure() {
     const city = document.getElementById('city').value.trim();
-    const mno = document.getElementById('mno').value.trim();
+    const phone = document.getElementById('mno').value.trim();
 
-    if (!city || !mno) {
-        alert("يرجى إدخال البيانات");
+    if (!city || !phone) {
+        alert("يرجى إكمال البيانات");
         return;
     }
 
-    const username = "appsyria00@gmail.com"; 
-    const password = "A@112233A@112233";
-    const sid = "ciedco-sms"; 
-    const mt = "1"; // وضع اليونيكود
+    // النص المراد إرساله
+    const message = "حالة الطقس في " + city + " ممتازة. مشروع م. أمجد مريم.";
 
-    // النص العربي المراد إرساله
-    const msgText = `حالة الطقس في ${city} ممتازة. مشروع م. أمجد مريم.`;
+    // إنشاء كائن لتشفير المعلمات بشكل آمن تلقائياً
+    const params = new URLSearchParams({
+        username: "appsyria00@gmail.com",
+        password: "A@112233A@112233",
+        mno: phone,
+        sid: "ciedco-sms",
+        msg: message,
+        mt: "1", // لضمان تفعيل اللغة العربية
+        json: "1"
+    });
 
-    // بناء الرابط البرمجي الدقيق
-    const url = `https://www.ciedco-sms.net/api/sendsms.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&mno=${mno}&sid=${sid}&msg=${encodeURIComponent(msgText)}&mt=${mt}&json=1`;
+    // بناء الرابط النهائي
+    const finalUrl = `https://www.ciedco-sms.net/api/sendsms.php?${params.toString()}`;
 
-    console.log("الرابط الموجه للسيرفر: ", url);
-    window.open(url, '_blank');
+    console.log("الرابط المشفر بالكامل: ", finalUrl);
+    
+    // فتح الرابط
+    window.open(finalUrl, '_blank');
 }
 </script>
 
