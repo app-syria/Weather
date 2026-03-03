@@ -2,64 +2,70 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع م. أمجد مريم - نظام SMS</title>
+    <title>مشروع م. أمجد مريم - نظام SMS الاحترافي</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #eef2f3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 360px; text-align: center; border-top: 8px solid #28a745; }
-        h2 { color: #333; margin-bottom: 5px; }
-        .status { color: #28a745; font-weight: bold; margin-bottom: 20px; display: block; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; text-align: center; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; width: 100%; }
-        button:hover { background: #218838; transform: scale(1.02); }
-        .footer { margin-top: 25px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; border-top: 6px solid #28a745; }
+        h2 { color: #333; }
+        textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 14px; text-align: right; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 15px; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .info { font-size: 11px; color: #666; text-align: right; margin-bottom: 10px; line-height: 1.6; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>نظام التنبيهات الذكي</h2>
-    <span class="status">● حالة النظام: متصل</span>
+    <h2>بوابة الرسائل الدولية</h2>
+    <p>مشروع تخرج م. أمجد مريم</p>
     
-    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
-    <input type="text" id="mno" placeholder="9639xxxxxxxx">
-    
-    <button onclick="sendFinalSms()">إرسال التقرير الجوي</button>
-
-    <div class="footer">
-        تطوير المهندس أمجد مريم - خبير أنظمة أمنية وشبكات
+    <div class="info">
+        * الأرقام بالصيغة الدولية (بدون 00 أو +).<br>
+        * للفصل بين الأرقام استخدم الفاصلة (،).<br>
+        * الرسالة العربية: 70 حرف (65 في حال التعدد).
     </div>
+
+    <input type="text" id="mno" placeholder="مثال: 9639xxxxxxxx,9665xxxxxxxx">
+    <textarea id="msg" rows="3" placeholder="اكتب نص الرسالة هنا..."></textarea>
+    
+    <button onclick="sendSmsVip()">إرسال الرسائل الآن</button>
 </div>
 
 <script>
-function sendFinalSms() {
-    const city = document.getElementById('city').value.trim();
-    let phone = document.getElementById('mno').value.trim();
+function sendSmsVip() {
+    let numbers = document.getElementById('mno').value.trim();
+    let message = document.getElementById('msg').value.trim();
 
-    if (!city || !phone) {
-        alert("يرجى إكمال البيانات");
+    if (!numbers || !message) {
+        alert("يرجى إدخال الأرقام ونص الرسالة");
         return;
     }
 
-    // تنظيف الرقم ليتوافق مع تعليمات Ciedco
-    phone = phone.replace(/^00/, '').replace(/^\+/, '');
+    // 1. تنظيف الأرقام: إزالة أي 00 أو + من البداية وتبديل الفاصلة العربية بإنجليزية لضمان قبول السيرفر
+    // التعليمات تقول الفاصلة التي على حرف الواو (،)
+    let cleanedNumbers = numbers.replace(/\+/g, '').replace(/\b00/g, '');
+    cleanedNumbers = cleanedNumbers.replace(/،/g, ','); 
 
-    const message = `حالة الطقس في ${city} ممتازة. مشروع م. أمجد مريم.`;
+    // 2. إعداد البيانات المعتمدة
+    const username = "appsyria00@gmail.com"; 
+    const password = "A@112233A@112233";
+    const sid = "ciedco-sms"; 
+    const mt = "1"; // 1 للغة العربية
 
-    // بناء المعلمات حسب توثيق Ciedco الرسمي
+    // 3. بناء الرابط النهائي
     const params = new URLSearchParams({
-        username: "appsyria00@gmail.com",
-        password: "A@112233A@112233",
-        mno: phone,
-        sid: "ciedco-sms",
+        username: username,
+        password: password,
+        mno: cleanedNumbers,
+        sid: sid,
         msg: message,
-        mt: "1", // 1 للغة العربية (Unicode)
+        mt: mt,
         json: "1"
     });
 
     const finalUrl = `https://www.ciedco-sms.net/api/sendsms.php?${params.toString()}`;
 
-    // فتح الرابط في نافذة جديدة
+    // فتح الرابط للتنفيذ ومعاينة النتيجة
     window.open(finalUrl, '_blank');
 }
 </script>
