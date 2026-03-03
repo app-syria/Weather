@@ -2,63 +2,57 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مشروع أمجد مريم - نظام SMS الاحترافي</title>
+    <title>مشروع التخرج - م. أمجد مريم</title>
     <style>
-        body { font-family: 'Tahoma', sans-serif; background: #f0f4f8; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 35px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 8px solid #28a745; }
-        h2 { color: #333; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #eef2f3; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 360px; text-align: center; border-top: 8px solid #28a745; }
+        h2 { color: #333; margin-bottom: 5px; }
+        .status { color: #28a745; font-weight: bold; margin-bottom: 20px; display: block; }
         input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; text-align: center; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        button:hover { background: #218838; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #218838; transform: scale(1.02); }
+        .footer { margin-top: 25px; font-size: 11px; color: #999; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>بوابة التنبيهات الجوية</h2>
-    <p>مشروع تخرج: أمجد مريم</p>
-    <input type="text" id="city" placeholder="المدينة (English)">
-    <input type="text" id="mno" placeholder="رقم الهاتف">
-    <button onclick="sendSmsHex()">إرسال بنظام العربي المطور</button>
+    <h2>نظام التنبيهات الذكي</h2>
+    <span class="status">● النظام متصل وجاهز</span>
+    
+    <input type="text" id="city" placeholder="أدخل اسم المدينة (English)">
+    <input type="text" id="mno" placeholder="رقم الموبايل">
+    
+    <button onclick="sendFinalSuccess()">إرسال التقرير الجوي</button>
+
+    <div class="footer">
+        تطوير المهندس أمجد مريم - خبير أنظمة أمنية وشبكات
+    </div>
 </div>
 
 <script>
-// دالة تحويل النص العربي إلى صيغة Hex (هذا ما يحتاجه سيرفر SMS)
-function convertToHex(str) {
-    let hex = "";
-    for (let i = 0; i < str.length; i++) {
-        let h = str.charCodeAt(i).toString(16).toUpperCase();
-        while (h.length < 4) h = "0" + h;
-        hex += h;
-    }
-    return hex;
-}
-
-function sendSmsHex() {
+function sendFinalSuccess() {
     const city = document.getElementById('city').value.trim();
     const phone = document.getElementById('mno').value.trim();
 
     if (!city || !phone) {
-        alert("يرجى إدخال البيانات");
+        alert("يرجى إكمال البيانات");
         return;
     }
 
-    // النص العربي
-    const message = "حالة الطقس في " + city + " ممتازة. مشروع أمجد مريم.";
+    const message = `حالة الطقس في ${city} ممتازة. مشروع أمجد مريم.`;
 
-    // تحويل الرسالة إلى Hex لضمان عدم ظهور علامات استفهام
-    const hexMessage = convertToHex(message);
+    const params = new URLSearchParams({
+        username: "appsyria00@gmail.com",
+        password: "A@112233A@112233",
+        mno: phone,
+        sid: "ciedco-sms",
+        msg: message,
+        mt: "1",
+        json: "1"
+    });
 
-    const username = "appsyria00@gmail.com";
-    const password = "A@112233A@112233";
-    const sid = "ciedco-sms";
-
-    // بناء الرابط النهائي (استخدمنا hexMessage بدلاً من message)
-    // ملاحظة: mt=1 تبقى كما هي لأننا نرسل Unicode
-    const finalUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&mno=${phone}&sid=${sid}&msg=${hexMessage}&mt=1&json=1`;
-
-    console.log("الرابط المطور (Hex): ", finalUrl);
-    window.open(finalUrl, '_blank');
+    window.open(`https://www.ciedco-sms.net/api/sendsms.php?${params.toString()}`, '_blank');
 }
 </script>
 
