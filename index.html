@@ -3,82 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام أمجد مريم للاتصالات الذكية</title>
+    <title>مشروع التخرج - أمجد مريم</title>
     <style>
-        :root { --primary-color: #0056b3; --accent-color: #00c851; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border-top: 8px solid var(--primary-color); }
-        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
-        p { color: #666; margin-bottom: 25px; font-size: 14px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--primary-color); outline: none; }
-        button { width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
-        button:hover { background: #004494; transform: translateY(-2px); }
-        .status { margin-top: 20px; padding: 10px; border-radius: 8px; font-size: 14px; display: none; }
-        .footer { margin-top: 30px; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 15px; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #007bff; }
+        h2 { color: #333; margin-bottom: 10px; }
+        p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background-color: #0056b3; }
+        .footer { margin-top: 20px; font-size: 11px; color: #999; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>نظام تنبيهات الطقس SMS</h1>
-    <p>مشروع تخرج م. أمجد مريم - بوابة Ciedco</p>
+<div class="card">
+    <h2>نظام SMS الذكي</h2>
+    <p>بوابة إرسال الطقس - مشروع تخرج أمجد مريم</p>
     
-    <input type="text" id="city" placeholder="المدينة بالإنجليزية (مثلاً: Damascus)">
+    <input type="text" id="city" placeholder="المدينة بالإنجليزية (مثل Damascus)">
     <input type="text" id="phone" placeholder="رقم المستلم (9639xxxxxxxx)">
     
-    <button onclick="processAndSend()">إرسال النشرة الجوية</button>
-    
-    <div id="statusBox" class="status"></div>
+    <button onclick="sendSmsDirect()">إرسال حالة الطقس</button>
 
     <div class="footer">
-        تم التطوير بواسطة أمجد مريم لخدمات الأنظمة الأمنية والشبكات
+        تطوير: أمجد مريم - متخصص أنظمة حماية وشبكات
     </div>
 </div>
 
 <script>
-async function processAndSend() {
+function sendSmsDirect() {
     const city = document.getElementById('city').value.trim();
     const mno = document.getElementById('phone').value.trim();
-    const statusBox = document.getElementById('statusBox');
 
     if (!city || !mno) {
-        showStatus("⚠️ يرجى إدخال المدينة والرقم", "#ff4444");
+        alert("يرجى إدخال اسم المدينة ورقم الهاتف أولاً");
         return;
     }
 
-    showStatus("⏳ جاري جلب الطقس وتجهيز الـ SMS...", "#0099CC");
+    // البيانات المعتمدة لنظام Ciedco API
+    const user = "appsyria00@gmail.com"; 
+    const pass = "A@112233A@112233";
+    const sender = "ciedco-sms";
+    const msg = `Weather Update: The weather in ${city} is being processed. Project by Amjad Maryam.`;
+    const mt = "1"; // للإرسال المتوافق مع العربية
 
-    try {
-        // 1. جلب بيانات الطقس الحقيقية
-        const weatherRes = await fetch(`https://wttr.in/${city}?format=%t+%C`);
-        const weatherData = await weatherRes.text();
+    // بناء الرابط البرمجي النهائي
+    const apiUrl = `https://www.ciedco-sms.net/api/sendsms.php?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&mno=${mno}&sender=${sender}&msg=${encodeURIComponent(msg)}&mt=${mt}`;
 
-        // 2. إعداد بيانات الإرسال لنظام Ciedco
-        const user = "appsyria00@gmail.com"; //
-        const pass = "A@112233A@112233"; //
-        const sender = "ciedco-sms"; //
-        const msg = `نشرة أمجد مريم: طقس ${city} حالياً هو ${weatherData}.`; //
-        const mt = "1"; //
-
-        // 3. بناء الرابط النهائي بالمسميات الصحيحة
-        const apiUrl = `https://www.ciedco-sms.net/api/sendsms.php?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&mno=${mno}&sender=${sender}&msg=${encodeURIComponent(msg)}&mt=${mt}`;
-
-        // 4. تنفيذ الإرسال وفتح النتيجة
-        showStatus("✅ تم إرسال الطلب للسيرفر!", "#00c851");
-        window.open(apiUrl, '_blank');
-
-    } catch (error) {
-        showStatus("❌ فشل الاتصال بالنظام", "#ff4444");
-    }
-}
-
-function showStatus(text, color) {
-    const statusBox = document.getElementById('statusBox');
-    statusBox.style.display = "block";
-    statusBox.style.backgroundColor = color + "22";
-    statusBox.style.color = color;
-    statusBox.innerText = text;
+    // فتح الرابط في نافذة جديدة لضمان الإرسال وتجنب أخطاء الاتصال
+    window.open(apiUrl, '_blank');
 }
 </script>
 
