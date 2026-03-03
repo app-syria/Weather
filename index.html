@@ -2,61 +2,53 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>نظام SMS المطور - م. أمجد مريم</title>
+    <title>مشروع التخرج - م. أمجد مريم</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 360px; text-align: center; border-top: 8px solid #007bff; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 10px; text-align: center; font-size: 16px; }
-        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; }
-        .footer { margin-top: 25px; font-size: 11px; color: #999; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 6px solid #007bff; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; }
+        button { width: 100%; padding: 15px; background: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>بوابة التنبيهات الجوية</h2>
-    <p>مشروع تخرج: أمجد مريم</p>
+    <h2>نظام SMS الذكي</h2>
+    <p>بوابة Ciedco - م. أمجد مريم</p>
     <input type="text" id="city" placeholder="المدينة (English)">
-    <input type="text" id="mno" placeholder="الرقم (9639xxxxxxxx)">
-    <button onclick="sendSmsCiedco()">إرسال الرسالة الآن</button>
-    <div class="footer">تطوير م. أمجد مريم - خبير أنظمة أمنية</div>
+    <input type="text" id="mno" placeholder="9639xxxxxxxx">
+    <button onclick="sendFinalSms()">إرسال الرسالة الآن</button>
 </div>
 
 <script>
-function sendSmsCiedco() {
+function sendFinalSms() {
     const city = document.getElementById('city').value.trim();
-    let mno = document.getElementById('mno').value.trim();
+    let phone = document.getElementById('mno').value.trim();
 
-    if (!city || !mno) {
-        alert("يرجى إدخال البيانات");
+    if (!city || !phone) {
+        alert("يرجى إكمال البيانات");
         return;
     }
 
-    // تنظيف الرقم: إزالة أي أصفار زائدة أو علامة + في البداية
-    mno = mno.replace(/^00/, '').replace(/^\+/, '');
+    // تنظيف الرقم ليتوافق مع تعليمات Ciedco (بدون + أو 00)
+    phone = phone.replace(/^00/, '').replace(/^\+/, '');
 
-    const username = "appsyria00@gmail.com"; 
-    const password = "A@112233A@112233";
-    const sid = "ciedco-sms"; 
-    
-    // النص العربي المراد إرساله
-    const msgText = `حالة الطقس في ${city} ممتازة. مشروع م. أمجد مريم.`;
+    const message = `حالة الطقس في ${city} ممتازة. مشروع م. أمجد مريم.`;
 
-    // بناء الرابط باستخدام المعايير المذكورة في توثيق Messaging
-    // سنستخدم الرابط المباشر الذي أعطى Success سابقاً مع التأكد من mt=1 و json=1
-    const params = new URLSearchParams({
-        username: username,
-        password: password,
-        mno: mno,
-        sid: sid,
-        msg: msgText,
-        mt: "1",
-        json: "1"
-    });
+    // استخدام المعلمات كما وردت في رابط Messaging الخاص بك
+    const params = new URLSearchParams();
+    params.append('username', 'appsyria00@gmail.com');
+    params.append('password', 'A@112233A@112233');
+    params.append('mno', phone);
+    params.append('sid', 'ciedco-sms'); // تأكد من لوحة التحكم أن هذا المعرف متاح لك
+    params.append('msg', message);
+    params.append('mt', '1'); // 1 للعربي
+    params.append('json', '1');
 
+    // بناء الرابط النهائي
     const finalUrl = `https://www.ciedco-sms.net/api/sendsms.php?${params.toString()}`;
 
-    console.log("الرابط الموجه للسيرفر: ", finalUrl);
+    // فتح الرابط لمتابعة النتيجة
     window.open(finalUrl, '_blank');
 }
 </script>
