@@ -1,21 +1,86 @@
-async function sendAutoWhatsApp() {
-    // هذه البيانات تحصل عليها عند فتح حساب تجريبي مجاني
-    const instance_id = "instance12345"; // رقم المعرف الخاص بك
-    const token = "abc123token"; // مفتاح الأمان
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام أمجد مريم للاتصالات الذكية</title>
+    <style>
+        :root { --primary-color: #0056b3; --accent-color: #00c851; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; border-top: 8px solid var(--primary-color); }
+        h1 { color: #333; font-size: 24px; margin-bottom: 10px; }
+        p { color: #666; margin-bottom: 25px; font-size: 14px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; font-size: 16px; transition: 0.3s; }
+        input:focus { border-color: var(--primary-color); outline: none; }
+        button { width: 100%; padding: 15px; background: var(--primary-color); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; margin-top: 10px; transition: 0.3s; }
+        button:hover { background: #004494; transform: translateY(-2px); }
+        .status { margin-top: 20px; padding: 10px; border-radius: 8px; font-size: 14px; display: none; }
+        .footer { margin-top: 30px; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 15px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>نظام تنبيهات الطقس SMS</h1>
+    <p>مشروع تخرج م. أمجد مريم - بوابة Ciedco</p>
     
-    const phone = "9639xxxxxxxx"; // رقم المستلم
-    const message = "*نشرة طقس أمجد مريم* 🌦️\nالحرارة في دمشق: 4°C";
+    <input type="text" id="city" placeholder="المدينة بالإنجليزية (مثلاً: Damascus)">
+    <input type="text" id="phone" placeholder="رقم المستلم (9639xxxxxxxx)">
+    
+    <button onclick="processAndSend()">إرسال النشرة الجوية</button>
+    
+    <div id="statusBox" class="status"></div>
 
-    const url = `https://api.ultramsg.com/${instance_id}/messages/chat`;
+    <div class="footer">
+        تم التطوير بواسطة أمجد مريم لخدمات الأنظمة الأمنية والشبكات
+    </div>
+</div>
 
-    // إرسال الطلب بنظام POST (تلقائي بالكامل)
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: `token=${token}&to=${phone}&body=${encodeURIComponent(message)}`
-    });
+<script>
+async function processAndSend() {
+    const city = document.getElementById('city').value.trim();
+    const mno = document.getElementById('phone').value.trim();
+    const statusBox = document.getElementById('statusBox');
 
-    if(response.ok) {
-        alert("✅ وصلت الرسالة للواتساب تلقائياً!");
+    if (!city || !mno) {
+        showStatus("⚠️ يرجى إدخال المدينة والرقم", "#ff4444");
+        return;
+    }
+
+    showStatus("⏳ جاري جلب الطقس وتجهيز الـ SMS...", "#0099CC");
+
+    try {
+        // 1. جلب بيانات الطقس الحقيقية
+        const weatherRes = await fetch(`https://wttr.in/${city}?format=%t+%C`);
+        const weatherData = await weatherRes.text();
+
+        // 2. إعداد بيانات الإرسال لنظام Ciedco
+        const user = "Appsyria@gmail.com"; //
+        const pass = "A@112233A@112233"; //
+        const sender = "ciedco-sms"; //
+        const msg = `نشرة أمجد مريم: طقس ${city} حالياً هو ${weatherData}.`; //
+        const mt = "1"; //
+
+        // 3. بناء الرابط النهائي بالمسميات الصحيحة
+        const apiUrl = `https://www.ciedco-sms.net/api/sendsms.php?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&mno=${mno}&sender=${sender}&msg=${encodeURIComponent(msg)}&mt=${mt}`;
+
+        // 4. تنفيذ الإرسال وفتح النتيجة
+        showStatus("✅ تم إرسال الطلب للسيرفر!", "#00c851");
+        window.open(apiUrl, '_blank');
+
+    } catch (error) {
+        showStatus("❌ فشل الاتصال بالنظام", "#ff4444");
     }
 }
+
+function showStatus(text, color) {
+    const statusBox = document.getElementById('statusBox');
+    statusBox.style.display = "block";
+    statusBox.style.backgroundColor = color + "22";
+    statusBox.style.color = color;
+    statusBox.innerText = text;
+}
+</script>
+
+</body>
+</html>
