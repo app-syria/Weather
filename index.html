@@ -2,65 +2,54 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام SMS الذكي - أمجد مريم</title>
+    <title>مشروع أمجد مريم - Ciedco SMS</title>
     <style>
-        :root { --primary: #28a745; --dark: #343a40; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .card { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); width: 100%; max-width: 380px; text-align: center; border-top: 8px solid var(--primary); }
-        h2 { color: var(--dark); margin-bottom: 10px; font-size: 22px; }
-        p { color: #666; font-size: 14px; margin-bottom: 25px; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 10px; box-sizing: border-box; text-align: center; font-size: 16px; transition: 0.3s; }
-        input:focus { border-color: var(--primary); outline: none; }
-        button { width: 100%; padding: 15px; background: var(--primary); color: white; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; margin-top: 15px; transition: 0.3s; }
-        button:hover { background: #218838; transform: translateY(-2px); }
-        .footer { margin-top: 30px; font-size: 11px; color: #aaa; border-top: 1px solid #eee; padding-top: 15px; }
+        body { font-family: 'Arial', sans-serif; background: #e9ecef; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); width: 340px; text-align: center; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 8px; box-sizing: border-box; text-align: center; }
+        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        button:hover { background: #218838; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>بوابة التنبيهات الجوية SMS</h2>
-    <p>مشروع تخرج م. أمجد مريم - نظام Ciedco</p>
-    
-    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
-    <input type="text" id="mno" placeholder="رقم الهاتف (9639xxxxxxxx)">
-    
-    <button onclick="sendSmsCiedco()">إرسال النشرة الجوية</button>
-
-    <div class="footer">
-        تم التطوير بواسطة أمجد مريم - خبير أنظمة الحماية والشبكات
-    </div>
+    <h2>نظام الرسائل القصيرة</h2>
+    <p>مشروع تخرج م. أمجد مريم</p>
+    <input type="text" id="city" placeholder="المدينة (مثل: Damascus)">
+    <input type="text" id="mno" placeholder="رقم الموبايل (9639xxxxxxxx)">
+    <button onclick="sendSmsFinal()">إرسال بنجاح الآن</button>
 </div>
 
 <script>
-function sendSmsCiedco() {
+function sendSmsFinal() {
     const city = document.getElementById('city').value.trim();
     const mno = document.getElementById('mno').value.trim();
 
     if (!city || !mno) {
-        alert("يرجى إدخال اسم المدينة ورقم الهاتف");
+        alert("يرجى إكمال البيانات");
         return;
     }
 
-    // البيانات المعتمدة حسب OpenAPI ونتائج التجربة الناجحة
+    // البيانات المعتمدة حسب OpenAPI
     const username = "appsyria00@gmail.com"; 
     const password = "A@112233A@112233";
     const sid = "ciedco-sms"; 
     
-    // نص الرسالة بالعربي (تم استخدام encodeURIComponent لضمان عدم ظهور ??)
-    const msgText = `حالة الطقس في ${city} هي 15 درجة مئوية. تحياتي، أمجد مريم.`;
+    // نص الرسالة
+    const rawMsg = `حالة الطقس في ${city} ممتازة. مشروع أمجد مريم.`;
+
+    // ملاحظة هامة: mt=1 ضروري جداً لإرسال اليونيكود (العربي)
+    const mt = "1";
+
+    // بناء الرابط البرمجي
+    // استخدمنا encodeURIComponent لضمان تحويل الفراغات والحروف العربية لأكواد يفهمها السيرفر
+    const url = `https://www.ciedco-sms.net/api/sendsms.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&mno=${mno}&sid=${sid}&msg=${encodeURIComponent(rawMsg)}&mt=${mt}&json=1`;
+
+    console.log("الرابط المرسل: ", url);
     
-    // mt=1 تعني Unicode (ضرورية جداً للغة العربية)
-    const mt = "1"; 
-
-    // بناء الرابط البرمجي الدقيق بمسميات: username, password, mno, sid, msg, mt
-    const apiUrl = `https://www.ciedco-sms.net/api/sendsms.php?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&mno=${mno}&sid=${sid}&msg=${encodeURIComponent(msgText)}&mt=${mt}&json=1`;
-
-    console.log("الرابط الموجه للسيرفر: ", apiUrl);
-
-    // فتح الرابط في نافذة جديدة لضمان الإرسال ومعاينة النتيجة (OK)
-    window.open(apiUrl, '_blank');
+    // فتح الرابط لمشاهدة "OK" وتأكيد الإرسال
+    window.open(url, '_blank');
 }
 </script>
 
