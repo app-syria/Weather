@@ -2,54 +2,55 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مشروع التخرج - أمجد مريم</title>
+    <title>مشروع التخرج - م. أمجد مريم</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 350px; text-align: center; border-top: 5px solid #007bff; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; text-align: center; }
-        button { width: 100%; padding: 14px; background-color: #007bff; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        .footer { margin-top: 20px; font-size: 11px; color: #999; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 320px; text-align: center; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; }
+        button:hover { background-color: #218838; }
     </style>
 </head>
 <body>
 
 <div class="card">
-    <h2>نظام SMS الذكي</h2>
-    <p>بوابة Ciedco - مشروع م. أمجد مريم</p>
-    
-    <input type="text" id="city" placeholder="المدينة (مثلاً: Damascus)">
+    <h3>نظام رسائل الطقس</h3>
+    <input type="text" id="city" placeholder="اسم المدينة بالإنجليزية">
     <input type="text" id="phone" placeholder="رقم الهاتف (mno)">
-    
-    <button onclick="sendSmsDirect()">إرسال حالة الطقس</button>
-
-    <div class="footer">
-        تم التطوير بواسطة أمجد مريم - متخصص أنظمة حماية وشبكات
-    </div>
+    <button onclick="sendSmsFinal()">إرسال SMS الآن</button>
 </div>
 
 <script>
-function sendSmsDirect() {
+function sendSmsFinal() {
     const city = document.getElementById('city').value.trim();
-    const mno = document.getElementById('phone').value.trim(); // استخدام mno بدلاً من numbers
+    const mno = document.getElementById('phone').value.trim();
 
     if (!city || !mno) {
-        alert("يرجى إدخال البيانات المطلوبة");
+        alert("يرجى ملء كافة الحقول");
         return;
     }
 
-    // البيانات الصحيحة حسب توثيق Ciedco وقسم المطورين
-    const user = "appsyria00@gmail.com"; // اليوزر نيم هو الإيميل كما ذكرت
-    const pass = "A@112233A@112233"; // كلمة المرور الخاصة بك
-    const sender = "ciedco-sms"; // اسم المرسل
-    const msg = `حالة الطقس في ${city}: صافي. مشروع م. أمجد مريم.`; // استخدام msg بدلاً من message
-    const mt = "1"; // استخدام mt بدلاً من unicode (القيمة 1 للعربي)
+    // البيانات المعتمدة التي ذكرتها
+    const user_mail = "appsyria00gmail.com"; 
+    const pass_word = "A@112233A@112233";
+    const sender_id = "ciedco-sms";
+    const message_text = "Weather update for " + city + ". Project by Amjad.";
+    const message_type = "1";
 
-    // بناء الرابط البرمجي بالمسميات التي حددتها (user, mno, msg, mt)
-    const apiUrl = `https://www.ciedco-sms.net/api/sendsms.php?user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}&mno=${mno}&sender=${sender}&msg=${encodeURIComponent(msg)}&mt=${mt}`;
+    // بناء الرابط يدوياً للتأكد من المسميات (user, pass, mno, msg, mt)
+    // لاحظ استخدام encodeURIComponent للإيميل والرسالة حصراً
+    const finalUrl = "https://www.ciedco-sms.net/api/sendsms.php?" + 
+                     "user=" + encodeURIComponent(user_mail) + 
+                     "&pass=" + encodeURIComponent(pass_word) + 
+                     "&mno=" + mno + 
+                     "&sender=" + sender_id + 
+                     "&msg=" + encodeURIComponent(message_text) + 
+                     "&mt=" + message_type;
 
-    // فتح الرابط لمشاهدة استجابة السيرفر وتجنب خطأ E003
-    window.open(apiUrl, '_blank');
+    console.log("الرابط المرسل: ", finalUrl);
+    
+    // فتح الرابط مباشرة
+    window.open(finalUrl, '_blank');
 }
 </script>
 
