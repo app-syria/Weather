@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة تحكم معتمد الغاز - م. أمجد مريم</title>
+    <style>
+        :root { --main-blue: #0056b3; --success-green: #28a745; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; margin: 0; padding: 20px; }
+        .dashboard { max-width: 900px; margin: auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; margin-bottom: 25px; }
+        .stats-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+        .card { background: #f8f9fa; padding: 15px; border-radius: 10px; text-align: center; border: 1px solid #e1e4e8; }
+        .card h3 { margin: 0; color: #555; font-size: 14px; }
+        .card p { margin: 10px 0 0; font-size: 24px; font-weight: bold; color: var(--main-blue); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: right; border-bottom: 1px solid #eee; }
+        th { background: #f8f9fa; color: #333; }
+        .btn-send { background: var(--success-green); color: white; border: none; padding: 12px 25px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
+        .btn-send:hover { background: #218838; transform: translateY(-2px); }
+        .status-badge { padding: 4px 8px; border-radius: 5px; font-size: 12px; background: #ffeeba; color: #856404; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard">
+    <header>
+        <div>
+            <h1>إدارة توزيع الغاز</h1>
+            <p style="color: #666;">مدينة التل - لوحة التحكم المركزية</p>
+        </div>
+        <div style="text-align: left;">
+            <span style="color: var(--success-green);">● متصل بـ API Syria</span>
+        </div>
+    </header>
+
+    <div class="stats-cards">
+        <div class="card">
+            <h3>إجمالي المسجلين</h3>
+            <p id="totalUsers">150</p>
+        </div>
+        <div class="card">
+            <h3>بانتظار الدور</h3>
+            <p id="pendingUsers">124</p>
+        </div>
+        <div class="card">
+            <h3>تم التسليم اليوم</h3>
+            <p>26</p>
+        </div>
+    </div>
+
+    <div style="background: #e7f3ff; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+        <h3>إرسال تنبيهات الوجبة الحالية</h3>
+        <p>سيتم إرسال رسائل SMS لأول 50 شخص في الدور (من الرقم 151 إلى 200).</p>
+        <button class="btn-send" onclick="sendBatchSms()">إرسال SMS للمستحقين الآن</button>
+    </div>
+
+    <h3>قائمة الدور الحالية</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>رقم الدور</th>
+                <th>اسم المواطن</th>
+                <th>رقم الهاتف</th>
+                <th>الحالة</th>
+            </tr>
+        </thead>
+        <tbody id="userTable">
+            <tr>
+                <td>#151</td>
+                <td>أحمد محمد علي</td>
+                <td>963933XXXXXX</td>
+                <td><span class="status-badge">بانتظار الإشعار</span></td>
+            </tr>
+            <tr>
+                <td>#152</td>
+                <td>سامر خالد</td>
+                <td>963944XXXXXX</td>
+                <td><span class="status-badge">بانتظار الإشعار</span></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script>
+function sendBatchSms() {
+    // محاكاة إرسال الرسائل عبر API
+    const message = "عزيزي المواطن، دورك في استلام جرة الغاز متاح الآن. يرجى مراجعة المركز خلال 24 ساعة.";
+    
+    // بناء الرابط كما هو موضح في مستندات API Syria و Ciedco
+    // باستخدام مفتاح الـ API الخاص بك
+    alert("جاري الاتصال بالسيرفر لإرسال 50 رسالة SMS...");
+    
+    // هنا نضع كود الـ Fetch للربط الفعلي
+    /*
+    fetch('https://www.ciedco-sms.net/api/sendsms.php?username=...&msg=' + encodeURIComponent(message))
+    .then(response => alert("تم إرسال التنبيهات بنجاح!"));
+    */
+    
+    alert("تمت العملية بنجاح! سيتم تحديث حالة الدور الآن.");
+}
+</script>
+
+</body>
+</html>
