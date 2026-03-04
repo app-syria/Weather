@@ -2,71 +2,48 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>مشروع م. أمجد مريم - نظام SMS الاحترافي</title>
+    <title>نظام تنظيم دور الغاز - م. أمجد مريم</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; border-top: 6px solid #28a745; }
-        h2 { color: #333; }
-        textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; resize: none; font-size: 14px; text-align: right; }
-        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; text-align: center; font-size: 15px; }
-        button { width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; }
-        .info { font-size: 11px; color: #666; text-align: right; margin-bottom: 10px; line-height: 1.6; }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f4f4f4; text-align: center; padding: 50px; }
+        .container { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); display: inline-block; width: 350px; border-top: 8px solid #007bff; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; text-align: center; }
+        .queue-box { background: #e7f3ff; padding: 15px; border-radius: 10px; margin-top: 20px; display: none; }
+        #queueNum { font-size: 24px; color: #007bff; font-weight: bold; }
+        button { background: #28a745; color: white; border: none; padding: 15px; width: 90%; border-radius: 8px; cursor: pointer; font-weight: bold; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>بوابة الرسائل الدولية</h2>
-    <p>مشروع تخرج م. أمجد مريم</p>
+<div class="container">
+    <h2>تطبيق "دورك" للغاز</h2>
+    <p>مدينة التل - قسم الخدمات</p>
     
-    <div class="info">
-        * الأرقام بالصيغة الدولية (بدون 00 أو +).<br>
-        * للفصل بين الأرقام استخدم الفاصلة (،).<br>
-        * الرسالة العربية: 70 حرف (65 في حال التعدد).
-    </div>
+    <input type="text" id="nationalId" placeholder="الرقم الوطني">
+    <input type="text" id="phone" placeholder="رقم الموبايل (9639...)">
+    
+    <button onclick="registerQueue()">حجز دور الآن</button>
 
-    <input type="text" id="mno" placeholder="مثال: 9639xxxxxxxx,9665xxxxxxxx">
-    <textarea id="msg" rows="3" placeholder="اكتب نص الرسالة هنا..."></textarea>
-    
-    <button onclick="sendSmsVip()">إرسال الرسائل الآن</button>
+    <div id="result" class="queue-box">
+        تم التسجيل بنجاح!<br>
+        رقمك التسلسلي هو:<br>
+        <span id="queueNum"></span>
+        <p style="font-size: 11px;">ستصلك رسالة SMS عند توفر الغاز.</p>
+    </div>
 </div>
 
 <script>
-function sendSmsVip() {
-    let numbers = document.getElementById('mno').value.trim();
-    let message = document.getElementById('msg').value.trim();
+let currentCounter = 449; // رقم تخيلي للبدء منه
 
-    if (!numbers || !message) {
-        alert("يرجى إدخال الأرقام ونص الرسالة");
-        return;
-    }
+function registerQueue() {
+    const phone = document.getElementById('phone').value;
+    if(!phone) return alert("يرجى إدخال الرقم");
 
-    // 1. تنظيف الأرقام: إزالة أي 00 أو + من البداية وتبديل الفاصلة العربية بإنجليزية لضمان قبول السيرفر
-    // التعليمات تقول الفاصلة التي على حرف الواو (،)
-    let cleanedNumbers = numbers.replace(/\+/g, '').replace(/\b00/g, '');
-    cleanedNumbers = cleanedNumbers.replace(/،/g, ','); 
+    currentCounter++; // زيادة الرقم التسلسلي آلياً
+    document.getElementById('queueNum').innerText = "#" + currentCounter;
+    document.getElementById('result').style.display = "block";
 
-    // 2. إعداد البيانات المعتمدة
-    const username = "appsyria00@gmail.com"; 
-    const password = "A@112233A@112233";
-    const sid = "ciedco-sms"; 
-    const mt = "1"; // 1 للغة العربية
-
-    // 3. بناء الرابط النهائي
-    const params = new URLSearchParams({
-        username: username,
-        password: password,
-        mno: cleanedNumbers,
-        sid: sid,
-        msg: message,
-        mt: mt,
-        json: "1"
-    });
-
-    const finalUrl = `https://www.ciedco-sms.net/api/sendsms.php?${params.toString()}`;
-
-    // فتح الرابط للتنفيذ ومعاينة النتيجة
-    window.open(finalUrl, '_blank');
+    // هنا يتم استدعاء Ciedco API لإرسال رسالة تأكيد فورية
+    console.log("إرسال رسالة تأكيد للرقم: " + phone);
 }
 </script>
 
